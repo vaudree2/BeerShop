@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeerShop Amateur - Bières d'exception pour connaisseurs</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🍺 BeerShop Amateur</h1>
+                <p>Par Vaudree2 - Bières d'exception & Spiritueux rares</p>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="products.html">Catalogue</a>
+                <a href="#" class="shopee-link">Beer Shop'E bu Vaudree2</a>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒 <span class="cart-count">0</span>
+                </div>
+                <a href="admin.html" class="admin-link">🔧 Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <div class="hero-content">
+                <h2>Bières vieillies & Spiritueux d'exception</h2>
+                <p>Découvrez notre sélection unique pour amateurs et connaisseurs</p>
+                <a href="products.html" class="btn-hero">Découvrir la collection</a>
+            </div>
+        </div>
+        
+        <div class="featured-section">
+            <h2 class="section-title">Nos produits phares</h2>
+            <div id="products-grid" class="products-grid"></div>
+        </div>
+    </main>
+
+    <!-- Modal Panier -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h3>Mon panier</h3>
+            <button class="close-cart" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-total" id="cart-total"></div>
+        <div class="checkout-form">
+            <h4>Informations de livraison</h4>
+            <form id="checkout-form">
+                <input type="text" id="firstname" placeholder="Prénom" required>
+                <input type="text" id="lastname" placeholder="Nom" required>
+                <input type="text" id="address" placeholder="Adresse de livraison" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="tel" id="phone" placeholder="Numéro GSM" required>
+                <select id="country">
+                    <option value="belgique">Belgique (6.90€)</option>
+                    <option value="europe">Europe (12.90€)</option>
+                    <option value="other">Autre (25.00€)</option>
+                </select>
+                <textarea id="comment" placeholder="Commentaire (optionnel)" rows="3"></textarea>
+                <button type="submit" class="btn-checkout">Procéder au paiement</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BeerShop Amateur</h4>
+                <p>Bières d'exception pour vrais connaisseurs</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: contact@beershopamateur.be</p>
+            </div>
+            <div class="footer-section">
+                <h4>Livraison</h4>
+                <p>Belgique: 6.90€</p>
+                <p>Europe: 12.90€</p>
+                <p>Autre: 25.00€</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 BeerShop Amateur by Vaudree2 - Tous droits réservés</p>
+        </div>
+    </footer>
+
+   <script src="https://www.paypal.com/sdk/js?client-id=AdGeN68j4OE-nyFa-BuKASmdWazRpD3ktFZLCbfO5hnwauPmqBicFbgO0D--X67HFdTzyI1s-LO32xQl&currency=EUR"></script>
+    <script src="config.js"></script>
+    <script src="products-data.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        // Lien vers Beer Shop'E bu Vaudree2
+        document.querySelector('.shopee-link')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.open(CONFIG.shopeeLink, '_blank');
+        });
+        
+        // Gestion du formulaire de checkout
+        document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const shippingInfo = {
+                firstname: document.getElementById('firstname').value,
+                lastname: document.getElementById('lastname').value,
+                address: document.getElementById('address').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
+                comment: document.getElementById('comment').value
+            };
+            
+            const success = await checkout(shippingInfo);
+            if (success) {
+                toggleCart();
+                document.getElementById('checkout-form').reset();
+            }
+        });
+        
+        // Afficher les produits phares sur la page d'accueil (les 4 premiers)
+        if (document.getElementById('products-grid')) {
+            const featuredProducts = products.slice(0, 4);
+            displayProducts(featuredProducts);
+        }
+    </script>
+</body>
+</html>

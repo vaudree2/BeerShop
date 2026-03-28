@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - BeerShop Amateur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🍺 BeerShop Amateur</h1>
+                <p>Par Vaudree2 - Administration</p>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="products.html">Catalogue</a>
+                <a href="#" class="shopee-link">Beer Shop'E bu Vaudree2</a>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒 <span class="cart-count">0</span>
+                </div>
+                <a href="admin.html" class="admin-link active">🔧 Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>Panneau d'administration</h1>
+                <p>Gérez vos produits, commandes et paramètres</p>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('products')">Produits</button>
+                <button class="tab-btn" onclick="showTab('orders')">Commandes</button>
+                <button class="tab-btn" onclick="showTab('settings')">Paramètres</button>
+            </div>
+            
+            <!-- Onglet Produits -->
+            <div id="products-tab" class="tab-content active">
+                <div class="admin-actions">
+                    <button class="btn-primary" onclick="toggleProductForm()">
+                        + Ajouter un nouveau produit
+                    </button>
+                </div>
+                
+                <!-- Formulaire d'ajout/modification -->
+                <div id="product-form" class="product-form-container">
+                    <div class="form-header">
+                        <h3 id="form-title">Ajouter un produit</h3>
+                        <button class="close-form" onclick="toggleProductForm()">✕</button>
+                    </div>
+                    <form id="product-form-element">
+                        <input type="hidden" id="product-id">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom du produit *</label>
+                                <input type="text" id="product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Volume</label>
+                                <input type="text" id="product-volume" placeholder="Ex: 33cl, 75cl, 70cl">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Couleur</label>
+                                <select id="product-color">
+                                    <option value="Blonde">Blonde</option>
+                                    <option value="Brune">Brune</option>
+                                    <option value="Ambrée">Ambrée</option>
+                                    <option value="Rousse">Rousse</option>
+                                    <option value="Noire">Noire</option>
+                                    <option value="Dorée">Dorée</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Brasserie/Distillerie</label>
+                                <input type="text" id="product-brewery">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Pays</label>
+                                <input type="text" id="product-country">
+                            </div>
+                            <div class="form-group">
+                                <label>Prix (€) *</label>
+                                <input type="number" id="product-price" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date mise en bouteille</label>
+                                <input type="date" id="product-bottling-date">
+                            </div>
+                            <div class="form-group">
+                                <label>Date de péremption</label>
+                                <input type="date" id="product-expiry-date">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stock</label>
+                                <select id="product-stock">
+                                    <option value="true">En stock</option>
+                                    <option value="false">Épuisé</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>URL de l'image</label>
+                                <input type="url" id="product-image" placeholder="https://...">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="product-description" rows="4" placeholder="Description détaillée du produit..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Enregistrer</button>
+                            <button type="button" class="btn-secondary" onclick="toggleProductForm()">Annuler</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Liste des produits -->
+                <div class="products-admin-list">
+                    <h3>Liste des produits</h3>
+                    <div id="products-admin-container" class="admin-products-grid"></div>
+                </div>
+            </div>
+            
+            <!-- Onglet Commandes -->
+            <div id="orders-tab" class="tab-content">
+                <div class="orders-header">
+                    <h3>Historique des commandes</h3>
+                    <button class="btn-secondary" onclick="exportOrders()">Exporter les commandes</button>
+                </div>
+                <div id="orders-list" class="orders-list">
+                    <!-- Les commandes apparaîtront ici -->
+                </div>
+            </div>
+            
+            <!-- Onglet Paramètres -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-form">
+                    <h3>Paramètres du site</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label>Nom du site</label>
+                            <input type="text" id="site-name" value="BeerShop Amateur">
+                        </div>
+                        <div class="form-group">
+                            <label>Email de contact</label>
+                            <input type="email" id="contact-email" value="contact@beershopamateur.be">
+                        </div>
+                        <div class="form-group">
+                            <label>Lien Beer Shop'E bu Vaudree2</label>
+                            <input type="url" id="shopee-link" value="https://www.example.com/vaudree2">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Frais livraison Belgique (€)</label>
+                                <input type="number" id="shipping-belgium" step="0.01" value="6.90">
+                            </div>
+                            <div class="form-group">
+                                <label>Frais livraison Europe (€)</label>
+                                <input type="number" id="shipping-europe" step="0.01" value="12.90">
+                            </div>
+                            <div class="form-group">
+                                <label>Frais livraison Autre (€)</label>
+                                <input type="number" id="shipping-other" step="0.01" value="25.00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil livraison gratuite (€)</label>
+                            <input type="number" id="free-shipping" step="0.01" value="100">
+                        </div>
+                        <button type="submit" class="btn-primary">Sauvegarder les paramètres</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Panier (pour l'aperçu) -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h3>Mon panier</h3>
+            <button class="close-cart" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-total" id="cart-total"></div>
+        <div class="checkout-form">
+            <h4>Informations de livraison</h4>
+            <form id="checkout-form">
+                <input type="text" id="firstname" placeholder="Prénom" required>
+                <input type="text" id="lastname" placeholder="Nom" required>
+                <input type="text" id="address" placeholder="Adresse de livraison" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="tel" id="phone" placeholder="Numéro GSM" required>
+                <select id="country">
+                    <option value="belgique">Belgique (6.90€)</option>
+                    <option value="europe">Europe (12.90€)</option>
+                    <option value="other">Autre (25.00€)</option>
+                </select>
+                <textarea id="comment" placeholder="Commentaire (optionnel)" rows="3"></textarea>
+                <button type="submit" class="btn-checkout">Procéder au paiement</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2024 BeerShop Amateur by Vaudree2 - Tous droits réservés</p>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="products-data.js"></script>
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+    
+    <script>
+        // Lien vers Beer Shop'E bu Vaudree2
+        document.querySelector('.shopee-link')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.open(CONFIG.shopeeLink, '_blank');
+        });
+        
+        // Gestion du formulaire de checkout
+        document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const shippingInfo = {
+                firstname: document.getElementById('firstname').value,
+                lastname: document.getElementById('lastname').value,
+                address: document.getElementById('address').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
+                comment: document.getElementById('comment').value
+            };
+            
+            const success = await checkout(shippingInfo);
+            if (success) {
+                toggleCart();
+                document.getElementById('checkout-form').reset();
+            }
+        });
+        
+        // Fonction pour afficher les commandes
+        function displayOrders() {
+            const ordersContainer = document.getElementById('orders-list');
+            if (!ordersContainer) return;
+            
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = '<p class="no-orders">Aucune commande pour le moment.</p>';
+                return;
+            }
+            
+            ordersContainer.innerHTML = orders.reverse().map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <strong>Commande #${order.id}</strong>
+                        <span class="order-date">${new Date(order.date).toLocaleString('fr-FR')}</span>
+                        <span class="order-status ${order.status}">${order.status === 'pending' ? 'En attente' : 'Confirmée'}</span>
+                    </div>
+                    <div class="order-details">
+                        <p><strong>Client:</strong> ${order.customer.firstname} ${order.customer.lastname}</p>
+                        <p><strong>Email:</strong> ${order.customer.email}</p>
+                        <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
+                        <p><strong>Adresse:</strong> ${order.customer.address}</p>
+                        <p><strong>Pays:</strong> ${order.customer.country}</p>
+                        ${order.customer.comment ? `<p><strong>Commentaire:</strong> ${order.customer.comment}</p>` : ''}
+                    </div>
+                    <div class="order-items">
+                        <strong>Articles:</strong>
+                        <ul>
+                            ${order.items.map(item => `<li>${item.name} x ${item.quantity} - ${(item.price * item.quantity).toFixed(2)}€</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="order-total">
+                        <strong>Sous-total:</strong> ${order.subtotal.toFixed(2)}€<br>
+                        <strong>Livraison:</strong> ${order.shippingCost.toFixed(2)}€<br>
+                        <strong>Total:</strong> ${order.total.toFixed(2)}€
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Exporter les commandes
+        window.exportOrders = function() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const dataStr = JSON.stringify(orders, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `commandes_${new Date().toISOString().slice(0,10)}.json`;
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        };
+        
+        // Initialiser l'affichage des commandes si on est sur l'onglet commandes
+        if (document.getElementById('orders-tab')) {
+            displayOrders();
+        }
+        
+        // Gestion des paramètres
+        const settingsForm = document.getElementById('settings-form');
+        if (settingsForm) {
+            // Charger les paramètres sauvegardés
+            const savedSettings = JSON.parse(localStorage.getItem('siteSettings')) || {};
+            document.getElementById('site-name').value = savedSettings.siteName || CONFIG.siteName;
+            document.getElementById('contact-email').value = savedSettings.contactEmail || CONFIG.adminEmail;
+            document.getElementById('shopee-link').value = savedSettings.shopeeLink || CONFIG.shopeeLink;
+            document.getElementById('shipping-belgium').value = savedSettings.shippingBelgium || CONFIG.shippingRates.belgium;
+            document.getElementById('shipping-europe').value = savedSettings.shippingEurope || CONFIG.shippingRates.europe;
+            document.getElementById('shipping-other').value = savedSettings.shippingOther || CONFIG.shippingRates.other;
+            document.getElementById('free-shipping').value = savedSettings.freeShippingThreshold || CONFIG.freeShippingThreshold;
+            
+            settingsForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const settings = {
+                    siteName: document.getElementById('site-name').value,
+                    contactEmail: document.getElementById('contact-email').value,
+                    shopeeLink: document.getElementById('shopee-link').value,
+                    shippingBelgium: parseFloat(document.getElementById('shipping-belgium').value),
+                    shippingEurope: parseFloat(document.getElementById('shipping-europe').value),
+                    shippingOther: parseFloat(document.getElementById('shipping-other').value),
+                    freeShippingThreshold: parseFloat(document.getElementById('free-shipping').value)
+                };
+                localStorage.setItem('siteSettings', JSON.stringify(settings));
+                
+                // Mettre à jour CONFIG
+                CONFIG.siteName = settings.siteName;
+                CONFIG.adminEmail = settings.contactEmail;
+                CONFIG.shopeeLink = settings.shopeeLink;
+                CONFIG.shippingRates.belgium = settings.shippingBelgium;
+                CONFIG.shippingRates.europe = settings.shippingEurope;
+                CONFIG.shippingRates.other = settings.shippingOther;
+                CONFIG.freeShippingThreshold = settings.freeShippingThreshold;
+                
+                alert('Paramètres sauvegardés avec succès !');
+            });
+        }
+    </script>
+</body>
+</html>

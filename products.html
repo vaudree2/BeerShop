@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue - BeerShop Amateur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>🍺 BeerShop Amateur</h1>
+                <p>Par Vaudree2 - Catalogue complet</p>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Accueil</a>
+                <a href="products.html">Catalogue</a>
+                <a href="#" class="shopee-link">Beer Shop'E bu Vaudree2</a>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒 <span class="cart-count">0</span>
+                </div>
+                <a href="admin.html" class="admin-link">🔧 Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="catalog-header">
+            <h1>Notre Catalogue</h1>
+            <p>Découvrez notre sélection de bières vieillies et spiritueux rares</p>
+        </div>
+        
+        <div class="filters-section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Pays :</label>
+                    <select id="filter-country">
+                        <option value="">Tous les pays</option>
+                        <option value="Belgique">Belgique</option>
+                        <option value="Écosse">Écosse</option>
+                        <option value="France">France</option>
+                        <option value="Irlande">Irlande</option>
+                        <option value="Angleterre">Angleterre</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Couleur :</label>
+                    <select id="filter-color">
+                        <option value="">Toutes les couleurs</option>
+                        <option value="Blonde">Blonde</option>
+                        <option value="Brune">Brune</option>
+                        <option value="Ambrée">Ambrée</option>
+                        <option value="Rousse">Rousse</option>
+                        <option value="Noire">Noire</option>
+                        <option value="Dorée">Dorée</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Prix :</label>
+                    <select id="filter-price">
+                        <option value="">Tous les prix</option>
+                        <option value="0-10">Moins de 10€</option>
+                        <option value="10-20">10€ - 20€</option>
+                        <option value="20-50">20€ - 50€</option>
+                        <option value="50-100">50€ - 100€</option>
+                        <option value="100+">Plus de 100€</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Recherche :</label>
+                    <input type="text" id="search" placeholder="Nom, brasserie...">
+                </div>
+                
+                <button id="reset-filters" class="btn-reset">Réinitialiser</button>
+            </div>
+        </div>
+        
+        <div id="products-grid" class="products-grid"></div>
+    </main>
+
+    <!-- Modal Panier (identique à index.html) -->
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h3>Mon panier</h3>
+            <button class="close-cart" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-total" id="cart-total"></div>
+        <div class="checkout-form">
+            <h4>Informations de livraison</h4>
+            <form id="checkout-form">
+                <input type="text" id="firstname" placeholder="Prénom" required>
+                <input type="text" id="lastname" placeholder="Nom" required>
+                <input type="text" id="address" placeholder="Adresse de livraison" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="tel" id="phone" placeholder="Numéro GSM" required>
+                <select id="country">
+                    <option value="belgique">Belgique (6.90€)</option>
+                    <option value="europe">Europe (12.90€)</option>
+                    <option value="other">Autre (25.00€)</option>
+                </select>
+                <textarea id="comment" placeholder="Commentaire (optionnel)" rows="3"></textarea>
+                <button type="submit" class="btn-checkout">Procéder au paiement</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>BeerShop Amateur</h4>
+                <p>Bières d'exception pour vrais connaisseurs</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: contact@beershopamateur.be</p>
+            </div>
+            <div class="footer-section">
+                <h4>Livraison</h4>
+                <p>Belgique: 6.90€</p>
+                <p>Europe: 12.90€</p>
+                <p>Autre: 25.00€</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 BeerShop Amateur by Vaudree2 - Tous droits réservés</p>
+        </div>
+    </footer>
+ <!-- SDK PayPal - AJOUTE CETTE LIGNE ICI -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AdGeN68j4OE-nyFa-BuKASmdWazRpD3ktFZLCbfO5hnwauPmqBicFbgO0D--X67HFdTzyI1s-LO32xQl&currency=EUR"></script>
+    <script src="config.js"></script>
+    <script src="products-data.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        // Lien vers Beer Shop'E bu Vaudree2
+        document.querySelector('.shopee-link')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.open(CONFIG.shopeeLink, '_blank');
+        });
+        
+        // Éléments de filtrage
+        const filterCountry = document.getElementById('filter-country');
+        const filterColor = document.getElementById('filter-color');
+        const filterPrice = document.getElementById('filter-price');
+        const searchInput = document.getElementById('search');
+        const resetBtn = document.getElementById('reset-filters');
+        
+        let currentFilters = {
+            country: '',
+            color: '',
+            price: '',
+            search: ''
+        };
+        
+        function applyFilters() {
+            let filtered = [...products];
+            
+            // Filtre par pays
+            if (currentFilters.country) {
+                filtered = filtered.filter(p => p.country === currentFilters.country);
+            }
+            
+            // Filtre par couleur
+            if (currentFilters.color) {
+                filtered = filtered.filter(p => p.color === currentFilters.color);
+            }
+            
+            // Filtre par prix
+            if (currentFilters.price) {
+                const [min, max] = currentFilters.price.split('-');
+                if (max === '+') {
+                    filtered = filtered.filter(p => p.price >= parseFloat(min));
+                } else {
+                    filtered = filtered.filter(p => p.price >= parseFloat(min) && p.price <= parseFloat(max));
+                }
+            }
+            
+            // Recherche textuelle
+            if (currentFilters.search) {
+                const searchLower = currentFilters.search.toLowerCase();
+                filtered = filtered.filter(p => 
+                    p.name.toLowerCase().includes(searchLower) ||
+                    p.brewery.toLowerCase().includes(searchLower) ||
+                    (p.description && p.description.toLowerCase().includes(searchLower))
+                );
+            }
+            
+            displayProducts(filtered);
+        }
+        
+        function updateFilters() {
+            currentFilters.country = filterCountry.value;
+            currentFilters.color = filterColor.value;
+            currentFilters.price = filterPrice.value;
+            currentFilters.search = searchInput.value;
+            applyFilters();
+        }
+        
+        function resetFilters() {
+            filterCountry.value = '';
+            filterColor.value = '';
+            filterPrice.value = '';
+            searchInput.value = '';
+            currentFilters = { country: '', color: '', price: '', search: '' };
+            applyFilters();
+        }
+        
+        filterCountry?.addEventListener('change', updateFilters);
+        filterColor?.addEventListener('change', updateFilters);
+        filterPrice?.addEventListener('change', updateFilters);
+        searchInput?.addEventListener('input', updateFilters);
+        resetBtn?.addEventListener('click', resetFilters);
+        
+        // Gestion du formulaire de checkout
+        document.getElementById('checkout-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const shippingInfo = {
+                firstname: document.getElementById('firstname').value,
+                lastname: document.getElementById('lastname').value,
+                address: document.getElementById('address').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                country: document.getElementById('country').value,
+                comment: document.getElementById('comment').value
+            };
+            
+            const success = await checkout(shippingInfo);
+            if (success) {
+                toggleCart();
+                document.getElementById('checkout-form').reset();
+            }
+        });
+        
+        // Afficher tous les produits au chargement
+        displayProducts(products);
+    </script>
+</body>
+</html>
