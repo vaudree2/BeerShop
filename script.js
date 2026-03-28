@@ -323,36 +323,108 @@ function processPayment(amount) {
     });
 }
 
-// Envoyer email de confirmation
+// ==========================================
+// Envoyer email de confirmation avec Brevo
+// ==========================================
 async function sendConfirmationEmail(order) {
+    // 🔑 REMPLACE PAR TA VRAIE CLÉ API BREVO
+    const BREVO_API_KEY = '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'; // ⚠️ À MODIFIER
+    
+    try {
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'api-key': BREVO_API_KEY
+            },
+            body: JSON.stringify({
+                sender: {
+                    name: 'BeerShop Amateur',
+                    email: 'contact@premiumbeers-vaudree2.com'
+                },
+                to: [{
+                    email: order.customer.email,
+                    name: order.customer.firstname + ' ' + order.customer.lastname
+                }],
+                subject: `Confirmation de commande #${order.id}`,
+                htmlContent: generateOrderEmailHtml(order)
+            })
+        });
+        
+        if (response.ok) {
+            console.log('✅ Email envoyé à', order.customer.email);
+            showNotification('Email de confirmation envoyé !', 'success');
+        } else {
+            const error = await response.json();
+            console.error('Erreur Brevo:', error);
+            // Sauvegarde locale en cas d'erreur
+            saveOrderLocally(order);
+            showNotification('Commande enregistrée, email non envoyé', 'warning');
+        }
+    } catch (error) {
+        console.error('Erreur réseau:', error);
+        saveOrderLocally(order);
+        showNotification('Erreur technique, commande sauvegardée', 'warning');
+    }
+}
+
+// Sauvegarde locale en cas de problème d'envoi email
+function saveOrderLocally(order) {
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
     orders.push(order);
     localStorage.setItem('orders', JSON.stringify(orders));
-    
-    console.log('========================================');
-    console.log('EMAIL DE CONFIRMATION DE COMMANDE');
-    console.log('========================================');
-    console.log(`À: ${order.customer.email}`);
-    console.log(`Objet: Confirmation de commande #${order.id}`);
-    console.log('');
-    console.log(`Bonjour ${order.customer.firstname} ${order.customer.lastname},`);
-    console.log('');
-    console.log('Votre commande a été confirmée avec succès.');
-    console.log('');
-    console.log('Détails de la commande:');
-    console.log('----------------------');
-    order.items.forEach(item => {
-        console.log(`${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)}€`);
-    });
-    console.log('----------------------');
-    console.log(`Sous-total: ${order.subtotal.toFixed(2)}€`);
-    console.log(`Frais de livraison: ${order.shippingCost.toFixed(2)}€`);
-    console.log(`Total: ${order.total.toFixed(2)}€`);
-    console.log('');
-    console.log(`Adresse de livraison: ${order.customer.address}`);
-    console.log('');
-    console.log('Merci de votre confiance !');
-    console.log('========================================');
+}
+
+// Générer le HTML de l'email
+function generateOrderEmailHtml(order) {
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .container { max-width: 600px; margin: 0 auto; }
+                .header { background: #2c1810; color: #d4af37; padding: 20px; text-align: center; }
+                .order-details { padding: 20px; }
+                .item { border-bottom: 1px solid #eee; padding: 10px 0; }
+                .total { font-weight: bold; margin-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>BeerShop Amateur</h1>
+                    <p>Confirmation de commande</p>
+                </div>
+                <div class="order-details">
+                    <h2>Merci pour votre commande !</h2>
+                    <p>Commande #${order.id}</p>
+                    <p>Date: ${new Date(order.date).toLocaleString('fr-FR')}</p>
+                    
+                    <h3>Articles commandés:</h3>
+                    ${order.items.map(item => `
+                        <div class="item">
+                            ${item.name} x ${item.quantity} - ${(item.price * item.quantity).toFixed(2)}€
+                        </div>
+                    `).join('')}
+                    
+                    <div class="total">
+                        <p>Sous-total: ${order.subtotal.toFixed(2)}€</p>
+                        <p>Livraison: ${order.shippingCost.toFixed(2)}€</p>
+                        <p>Total: ${order.total.toFixed(2)}€</p>
+                    </div>
+                    
+                    <h3>Adresse de livraison:</h3>
+                    <p>${order.customer.firstname} ${order.customer.lastname}<br>
+                    ${order.customer.address}</p>
+                    
+                    <p>Un email de suivi vous sera envoyé dès l'expédition de votre commande.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+    `;
 }
 
 // Générer ID de commande unique
